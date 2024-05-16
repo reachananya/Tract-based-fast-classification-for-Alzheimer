@@ -4,7 +4,7 @@ from dipy.core.gradients import gradient_table
 from dipy.io.image import load_nifti
 from dipy.io.gradients import read_bvals_bvecs
 from dipy.reconst.csdeconv import auto_response_ssst
-from dipy.reconst.dti import TensorModel, fractional_anisotropy
+from dipy.reconst.dti import TensorModel, fractional_anisotropy, mean_diffusivity, axial_diffusivity
 from dipy.data import default_sphere
 from dipy.reconst.dti import color_fa
 from dipy.direction import peaks_from_model
@@ -19,10 +19,8 @@ from dipy.io.stateful_tractogram import Space, StatefulTractogram
 from dipy.io.streamline import save_tck
 from dipy.viz import colormap
 import os
+from sklearn.neighbors import KDTree
 import numpy as np
-from dipy.tracking.streamline import transform_streamlines
-from dipy.core.interpolation import interpolate_scalar_3d
-
 import nibabel as nib
 from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
@@ -30,8 +28,7 @@ from dipy.segment.mask import median_otsu
 from dipy.reconst.dti import TensorModel, fractional_anisotropy, mean_diffusivity, axial_diffusivity
 from scipy.spatial import KDTree
 from sklearn.neighbors import KDTree
-from hashlib import md5
-import pickle
+
 
 # Function to load NIFTI file
 def load_nifti(file_path, return_img=False):
@@ -48,10 +45,17 @@ jhu_template_path = 'JHU-ICBM-labels-1mm.nii.gz'
 jhu_template_img = nib.load(jhu_template_path)
 jhu_template_data = jhu_template_img.get_fdata()
 
+# 5 - body of corpus callosum
+# 7 - fornix
+# 8 - corticospinal tract r
+# 16 - cerebral peduncle r
+# 18 - anterior limb of internal capsule r
+# 36, 37, 38, 39 - cingulum
+
 roi_labels = [5, 7, 8, 16, 18, 36, 37, 38, 39]
 
 
-subject_fol = ["003_S_4441_CN_F_69","003_S_4350_CN_M_73","109_S_4499_CN_M_84",
+subject_folder = ["003_S_4441_CN_F_69","003_S_4350_CN_M_73","109_S_4499_CN_M_84",
                   "003_S_4288_CN_F_73","003_S_4644_CN_F_68","007_S_4620_CN_M_77",
                   "098_S_4018_CN_M_76","098_S_4003_CN_F_78","094_S_4234_CN_M_70",
                   "021_S_4335_CN_F_73","021_S_4276_CN_F_75","016_S_2284_EMCI_M_73",
@@ -75,7 +79,7 @@ subject_fol = ["003_S_4441_CN_F_69","003_S_4350_CN_M_73","109_S_4499_CN_M_84",
                   "003_S_4152_M_61_AD","005_S_5038_M_82_AD","005_S_4910_F_82_AD",
                   "003_S_4136_M_67_AD","003_S_4892_F_75_AD"]
 
-for subject_name in subject_fol:
+for subject_name in subject_folder:
     subject_folder_path = "registered_data"
 
     # Load registered labels
@@ -85,15 +89,15 @@ for subject_name in subject_fol:
 
     # Find coordinates corresponding to the registered labels
     label_coordinates = []
-
     roi_coordinates = []
 
     for label in roi_labels:
         label_coordinates_label = np.array(np.where(registered_labels == label)).T
         label_coordinates.append(label_coordinates_label)
 
+
     selected_coordinates = []
-    valid_folder_path = "41diff_coordinates"
+    valid_folder_path = "/content/drive/MyDrive/Ananya_Singhal_2010110087/ICIP - classification/41diff_coordinates"
     valid_coordinates_file_path = os.path.join(valid_folder_path, f'coordinates_{subject_name}.txt')
     valid_coordinates = np.loadtxt(valid_coordinates_file_path, delimiter=',')
 
@@ -107,38 +111,47 @@ for subject_name in subject_fol:
             indices = indices[dist <= 4]
             valid = valid_coordinates[indices]
             selected_coordinates.append(valid)
+            print(len(selected_coordinates))
+
+    # Load diffusion tensor data
+    ordered_folder_path = "ordered_DTI_4D_img_41diff_new21_subs"
+    nii_gz_file = os.path.join(ordered_folder_path, f'ordered_4d_image_{subject_name}.nii.gz')
+    data, affine, hardi_img = load_nifti(nii_gz_file, return_img=True)
+
+    # Load common b-values and b-vectors
+    common_bval_file = np.load('common_bval_file.npy')
+    common_bvec_file = np.load('common_bvec_file.npy')
+
+    gtab = gradient_table(common_bval_file, common_bvec_file)
+
+    # Masking
+    maskdata, mask = median_otsu(data, vol_idx=range(10, 46), median_radius=3, numpass=1, autocrop=False, dilate=2)
+
+    # Tensor model fitting
+    tenmodel = TensorModel(gtab)
+    tenfit = tenmodel.fit(maskdata)
 
     # Calculate FA, MD, and AD scores for selected coordinates
-    FA = nib.load(f'21diff_predicted_SwinTransformer/FA/FA_{subject_name}.nii.gz')
-    FA_data = FA.get_fdata()
-    FA_list = []
-
-    MD = nib.load(f'21diff_predicted_SwinTransformer/MD/MD_{subject_name}.nii.gz')
-    MD_data = MD.get_fdata()
-    MD_list = []
-
-    AD = nib.load(f'21diff_predicted_SwinTransformer/AD/AD_,{subject_name}.nii.gz')
-    AD_data = AD.get_fdata()
-    AD_list = []
-
+    FA = []
+    MD = []
+    AD = []
     for s in selected_coordinates:
       selected_coordinates_indices = s.astype(float)
       selected_coordinates_indices = tuple(selected_coordinates_indices.T.astype(int).tolist())
       print(selected_coordinates_indices)
-
-      FA_list.append(FA_data[selected_coordinates_indices])
-      MD_list.append(MD_data[selected_coordinates_indices])
-      AD_list.append(AD_data[selected_coordinates_indices])
+      selected_evals = tenfit.evals[selected_coordinates_indices]
+      print(selected_coordinates_indices)
+      FA.append(fractional_anisotropy(selected_evals))
+      MD.append(mean_diffusivity(selected_evals))
+      AD.append(axial_diffusivity(selected_evals))
 
     print(f'Processing and saving for {subject_name} complete.')
 
-    folder1 = "/content/drive/MyDrive/Ananya_Singhal_2010110087/FA_AD_MD_21diff"
+
+    folder1 = "FA_AD_MD"
     # Saving the FA in .npy file
     if not os.path.exists(folder1):
       os.makedirs(folder1)
-    with open(os.path.join(folder1, f'FA_21diff_{subject_name}.pickle'), 'wb') as handle:
-      pickle.dump(FA_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open(os.path.join(folder1, f'MD_21diff_{subject_name}.pickle'), 'wb') as handle:
-      pickle.dump(MD_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open(os.path.join(folder1, f'AD_21diff_{subject_name}.pickle'), 'wb') as handle:
-      pickle.dump(AD_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    np.save(os.path.join(folder1, f'FA_{subject_name}.npy'), FA, allow_pickle = True)
+    np.save(os.path.join(folder1, f'MD_{subject_name}.npy'), MD)
+    np.save(os.path.join(folder1, f'AD_{subject_name}.npy'), AD)
