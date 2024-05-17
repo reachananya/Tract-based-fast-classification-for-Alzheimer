@@ -176,6 +176,6 @@ for subject_name in subject_folder:
 
     output_folder1 = ''
     # Save coordinates to a text file
-    filename_coordinates = f'coordinates_003_S_2374_EMCI_F_82_DTI_ADNI.txt'
+    filename_coordinates = f'coordinates_{subject_name}.txt'
     output_filepath_coordinates = os.path.join(output_folder1, filename_coordinates)
     np.savetxt(output_filepath_coordinates, valid_coordinates, delimiter=',')
