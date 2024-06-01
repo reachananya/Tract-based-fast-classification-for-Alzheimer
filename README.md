@@ -33,4 +33,4 @@ Following is the Demographic details of ADNI Dataset
 
 
 # SwinDTI model architecture 
-![](Figures/SwinDTI model architecture.png)
+![](Figures/SwinDTI_model_architecture.png)
