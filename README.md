@@ -16,3 +16,16 @@ The early detection of Alzheimer’s disease (AD) poses a significant challenge 
 6. Follow the steps under Dataset heading to setup the dataset.
 
 
+# Dataset Description
+Data used in preparation of this article were obtained from the Alzheimer’s Disease Neuroimaging Initiative (ADNI) database [adni.loni.usc.edu]: URL.
+Following is the Demographic details of ADNI Dataset
+
+| Characteristics | Description | Number of subjects |
+|---|---|---|
+| Cohorts          | Controls     | 24                 |
+|                 | EMCI/LMCI    | 34                 |
+| Age group        | 50-59        | 1                  |
+|                 | 60-69        | 16                 |
+|                 | 70-79        | 36                 |
+|                 | 80-89        | 12                 |
+|                 | 90-99        | 1                  |
