@@ -39,7 +39,7 @@ For diffusion tensor estimation, we employed our recently proposed SwinDTI [mod
 ![](Figures/SwinDTI_model_architecture.png)
 
 Proposed feature selection approach for Tract-based rapid classification utilizing sparse measurements across 21 and 5 diffusion directions.
-Folowing are the ROI regions: 
+Following are the ROI regions: 
 
 | Cluster-ID | Size (Voxels) | Regions |
 |---|---|---|
@@ -59,4 +59,29 @@ Folowing are the ROI regions:
 To extract diffusion metrics from specific white matter (WM) fiber bundles rele- vant to AD, we employed JHU label registration on the generated tractography.
 
 ![](Figures/tractography.jpeg)
+
+
+# Results
+
+We employed two k-fold cross-validation strategies: k-fold Decision Tree and k-fold Support Vector Machine (SVM) with radial basis function (RBF) kernel. 
+The results of classification using 21diff and 5diff are as follows.
+
+Classification scores on 21 diffusion directions:
+
+| Classification Method | SwinDTI | Traditional | TransformerDTI |
+|---|---|---|---|
+| K-Fold Decision Tree | 91% | 64% | 64% |
+| K-Fold SVM (rbf) | 91% | 73% | 64% |
+
+
+Classification scores on 5 diffusion directions:
+
+| Classification Method | SwinDTI | Traditional | TransformerDTI |
+|---|---|---|---|
+| K-Fold Decision Tree | 91% | 91% | 73% |
+| K-Fold SVM (rbf) | 91% | 82% | 82% |
+
+
+Since SwinDTI model produced highly accurate FA-AxD metrics for 21 and 5 diffusion directions, the classification performance demon- strates the effectiveness of SwinDTI in differentiating between healthy controls and AD patients, gaining insights into the specific brain regions contributing to this distinction is crucial. Hence, we employed feature importance analysis of the Decision Tree classifier and SVM classifier to identify the most informative Regions of Interest (ROIs).
+The analysis revealed the top 3 most important features corresponding to the Cingulum, Corpus Callosum, and Corticospinal Spinal Tracts.
 
