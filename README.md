@@ -17,7 +17,7 @@ The early detection of Alzheimer’s disease (AD) poses a significant challenge 
 
 
 # Dataset Description
-Data used in preparation of this article were obtained from the Alzheimer’s Disease Neuroimaging Initiative (ADNI) database [https://adni.loni.usc.edu/]: URL.
+Data used in preparation of this article were obtained from the Alzheimer’s Disease Neuroimaging Initiative (ADNI) database (https://adni.loni.usc.edu/).
 Following is the Demographic details of ADNI Dataset
 
 | Characteristics | Description | Number of subjects |
@@ -29,3 +29,8 @@ Following is the Demographic details of ADNI Dataset
 |                 | 70-79        | 36                 |
 |                 | 80-89        | 12                 |
 |                 | 90-99        | 1                  |
+
+
+
+# SwinDTI model architecture 
+
