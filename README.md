@@ -33,4 +33,5 @@ Following is the Demographic details of ADNI Dataset
 
 
 # SwinDTI model architecture 
+For diffusion tensor estimation, we employed our recently proposed SwinDTI  [https://proceedings.mlr.press/v222/tiwari24a/tiwari24a.pdf]: URL model. This deep learning-based approach offers advantages over traditional methods by efficiently reconstructing high-quality diffusion tensors from DWI data acquired reduced number of diffusion directions i.e 21 diffusion directions and 5 diffusion directions.
 ![](Figures/SwinDTI_model_architecture.png)
