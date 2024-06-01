@@ -40,15 +40,23 @@ For diffusion tensor estimation, we employed our recently proposed SwinDTI [mod
 
 Proposed feature selection approach for Tract-based rapid classification utilizing sparse measurements across 21 and 5 diffusion directions.
 Folowing are the ROI regions: 
-1. Corpus Callosum (ROI-5)
-2. Fornix (ROI-7)
-3. Corticospinal Tract (ROI-8, Right Hemisphere)
-4. Cerebral peduncle r (ROI-16, Right Hemisphere)
-5. Anterior Limb of Internal Capsule (ALIC) (ROI-18, Right Hemisphere)
-6. Cingulum (ROI-36, 37, 38, 39)
-7. 
+
+| Cluster-ID | Size (Voxels) | Regions |
+|---|---|---|
+| 5 | 12729 | Body of corpus callosum                         |
+| 7 | 1362 | Corticospinal tract r                       |
+| 8 | 1370 | Fornix                                       |
+| 16 | 2278 | Anterior limb of internal capsule r           |
+| 18 | 3018 | Cerebral peduncle r                          |
+| 36 | 2751 | Cingulum                                   |
+| 37 | 1238 | Cingulum                                   |
+| 38 | 1155 | Cingulum                                   |
+| 39 | 1124 | Cingulum                                   |
+
+
 ![](Figures/ICPR_Workflow_FINAL_2.jpeg)
 
 To extract diffusion metrics from specific white matter (WM) fiber bundles rele- vant to AD, we employed JHU label registration on the generated tractography.
+
 ![](Figures/tractography.jpeg)
 
