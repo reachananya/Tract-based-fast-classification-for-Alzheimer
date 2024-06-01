@@ -36,6 +36,9 @@ Following is the Demographic details of ADNI Dataset
 
 For diffusion tensor estimation, we employed our recently proposed SwinDTI [model](https://proceedings.mlr.press/v222/tiwari24a/tiwari24a.pdf). This deep learning-based approach offers advantages over traditional methods by efficiently reconstructing high-quality diffusion tensors from DWI data acquired with a reduced number of diffusion directions, i.e., 21 diffusion directions and 5 diffusion directions.
 
-
-For diffusion tensor estimation, we employed our recently proposed [SwinDTI model]: https://proceedings.mlr.press/v222/tiwari24a/tiwari24a.pdf "SwinDTI Paper". This deep learning-based approach offers advantages over traditional methods by efficiently reconstructing high-quality diffusion tensors from DWI data acquired reduced number of diffusion directions i.e 21 diffusion directions and 5 diffusion directions.
 ![](Figures/SwinDTI_model_architecture.png)
+
+![](Figures/ICPR_Workflow_FINAL_2.jpeg)
+
+![](Figures/tractography.png)
+
